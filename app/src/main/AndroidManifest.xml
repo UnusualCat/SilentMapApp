@@ -14,21 +14,24 @@
         android:theme="@style/Theme.SilentMapApp"
         tools:targetApi="31">
 
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API}" />
 
         <activity
-            android:name=".MapsActivity"
-            android:exported="true"
-            android:label="@string/title_activity_maps">
+            android:name=".MainActivity"
+            android:label="MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        <activity
+            android:name=".MapsActivity"
+            android:exported="true"
+            android:label="@string/title_activity_maps">
+        </activity>
 
+    </application>
 </manifest>
