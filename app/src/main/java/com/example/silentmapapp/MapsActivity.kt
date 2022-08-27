@@ -2,7 +2,9 @@ package com.example.silentmapapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -11,23 +13,25 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
+import androidx.core.graphics.toColorInt
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.example.silentmapapp.databinding.ActivityMapsBinding
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.GeofencingClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var geoFencingClient: GeofencingClient
+    private lateinit var geofenceHelper: GeofenceHelper
     private val TAG = "MapsActivity"
+    private var geofenceID = "test"
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val FINE_LOCATION_ACCESS_REQUEST_CODE = 10001
     private val BACKGROUND_LOCATION_ACCESS_REQUEST_CODE=1002
@@ -40,7 +44,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
+        geofenceHelper= GeofenceHelper(this)
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -48,9 +52,54 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.setOnMapLongClickListener(this)
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.setAllGesturesEnabled(true)
         enableUserLocation()
+    }
+
+    override fun onMapLongClick(latLng: LatLng) {
+        mMap.clear()
+        addMarker(latLng)
+        addCircle(latLng,"200.0")
+        addGeofence(latLng,"200.0")
+    }
+
+    private fun addCircle(LatLng: LatLng, radius: String) {
+
+        val circleOptions = CircleOptions()
+        circleOptions.center(LatLng)
+        circleOptions.radius(radius.toDouble())
+        circleOptions.strokeColor(Color.argb(255, 255, 0, 0))
+        circleOptions.fillColor(Color.argb(64, 255, 0, 0))
+        circleOptions.strokeWidth(4F)
+        mMap.addCircle(circleOptions)
+        //TODO Aggiungere colore come opzione
+    }
+
+    private fun addMarker(LatLng: LatLng) {
+        val markerOptions: MarkerOptions = MarkerOptions().position(LatLng)
+        mMap.addMarker(markerOptions)
+    }
+
+    @SuppressLint("MissingPermission")
+    fun addGeofence(LatLng: LatLng, radius: String) {
+        val geofence = geofenceHelper.getGeoFence(
+            geofenceID,
+            LatLng,
+            radius.toFloat(),
+            Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
+        )
+        val geofencingRequest: GeofencingRequest = geofenceHelper.getGeoFencingRequest(geofence)
+
+        geoFencingClient.addGeofences(geofencingRequest, geofenceHelper.getPendingIntent())
+            .addOnSuccessListener {
+                Log.d(TAG, "onSuccess: Geofence Added...")
+            }
+            .addOnFailureListener { e ->
+                val errorMessage = geofenceHelper.getErrorString(e)
+                Log.d(TAG, "onFailure: $errorMessage")
+            }
     }
 
     @SuppressLint("MissingPermission")
