@@ -32,11 +32,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         when (val geofenceTransition = geofencingEvent?.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                //TODO Notifiche
                 audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_MUTE, 0)
             }
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                //TODO Notifiche
                 audioManager.adjustStreamVolume(AudioManager.STREAM_RING,AudioManager.ADJUST_UNMUTE,0)
             }
             else -> {
