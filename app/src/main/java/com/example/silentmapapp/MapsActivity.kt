@@ -28,9 +28,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private lateinit var permission: Permissions
     val GEOFENCE_FILE_NAME = "listaGeofence.data"
     var listaGeofence: ArrayList<GeofenceSettings> = arrayListOf()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -44,6 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
+
         mMap = googleMap
         permission= Permissions(this , this , mMap , fusedLocationProviderClient)
         mMap.setOnMapLongClickListener(this)
@@ -55,10 +57,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mMap.isMyLocationEnabled = true
     }
 
-    private fun loadGeofencesIfTheyExist()
-    {
+    private fun loadGeofencesIfTheyExist() {
+
         val file = File(GEOFENCE_FILE_NAME)
+
             if (file.exists()) {
+
                 listaGeofence = FileManager.loadFromFile(this,
                     GEOFENCE_FILE_NAME
                 ) as ArrayList<GeofenceSettings>
