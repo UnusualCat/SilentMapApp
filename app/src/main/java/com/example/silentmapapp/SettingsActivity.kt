@@ -4,12 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Switch
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 
 class SettingsActivity : AppCompatActivity() {
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -20,6 +19,8 @@ class SettingsActivity : AppCompatActivity() {
         val tvUpdates: TextView = findViewById(R.id.tv_updates)
         val tvSensor: TextView = findViewById(R.id.tv_sensor)
         val powerMode: SwitchCompat = findViewById(R.id.powerMode)
+        val tvLat: TextView = findViewById(R.id.tv_lat)
+        val tvLon: TextView = findViewById(R.id.tv_lon)
 
         val sharedPreference = getSharedPreferences("PREFERENCES",Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
@@ -32,12 +33,21 @@ class SettingsActivity : AppCompatActivity() {
             else tvUpdates.text = "OFF"
         }
 
-        if(sharedPreference.contains("powerMode")){
+        if(sharedPreference.contains("savePower")){
 
-            powerMode.isChecked = sharedPreference.getBoolean("powerMode", false)
+            powerMode.isChecked = sharedPreference.getBoolean("savePower", false)
 
-            if(powerMode.isChecked) tvSensor.text = "ON"
-            else tvSensor.text = "OFF"
+            if(powerMode.isChecked) tvSensor.text = "Torre cellulare + WIFI"
+            else tvSensor.text = "GPS"
+        }
+
+        if(switchLocationUpdates.isChecked) {
+
+            if (sharedPreference.contains("lat"))
+                tvLat.text = sharedPreference.getString("lat" , "0.00")
+
+            if (sharedPreference.contains("lon"))
+                tvLon.text = sharedPreference.getString("lon" , "0.00")
         }
 
         switchLocationUpdates.setOnClickListener {
@@ -57,14 +67,14 @@ class SettingsActivity : AppCompatActivity() {
 
         powerMode.setOnClickListener {
 
-            if(switchLocationUpdates.isChecked){
+            if(powerMode.isChecked){
 
                 editor.putBoolean("savePower",true)
-                tvSensor.text = "DA CAMBIARE"}
+                tvSensor.text = "Torre cellulare + WIFI"}
 
             else{
                 editor.putBoolean("savePower",false)
-                tvSensor.text = "DA CAMBIARE"
+                tvSensor.text = "GPS"
             }
             editor.apply()
         }

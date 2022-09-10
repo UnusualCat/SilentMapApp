@@ -24,5 +24,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
+
+        placesButton.setOnClickListener {
+            val intent = Intent(this, MarkersActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

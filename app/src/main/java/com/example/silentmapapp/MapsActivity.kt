@@ -29,6 +29,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     val GEOFENCE_FILE_NAME = "listaGeofence.data"
     var listaGeofence: ArrayList<GeofenceSettings> = arrayListOf()
 
+    object Geofence_Help{
+        var Geofences: ArrayList<String> = arrayListOf()
+        fun addGeofenceToRemove(id: String){
+            Geofences.add(id)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -63,9 +70,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
             if (file.exists()) {
 
-                listaGeofence = FileManager.loadFromFile(this,
-                    GEOFENCE_FILE_NAME
-                ) as ArrayList<GeofenceSettings>
+                listaGeofence = FileManager.loadFromFile(this) as ArrayList<GeofenceSettings>
 
                 for (elemento in listaGeofence)
                 {
