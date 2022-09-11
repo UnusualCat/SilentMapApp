@@ -1,4 +1,4 @@
-package com.example.silentmapapp
+package Helper
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -10,12 +10,13 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.silentmapapp.MapsActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 
-class Permissions(var activity: MapsActivity , var context: Context , var mMap: GoogleMap , var fusedLocationProviderClient: FusedLocationProviderClient)
+class Permissions(var activity: MapsActivity, var context: Context, var mMap: GoogleMap, var fusedLocationProviderClient: FusedLocationProviderClient)
 {
     val FINE_LOCATION_ACCESS_REQUEST_CODE = 10001
     val BACKGROUND_LOCATION_ACCESS_REQUEST_CODE = 1002

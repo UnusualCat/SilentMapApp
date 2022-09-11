@@ -1,4 +1,4 @@
-package com.example.silentmapapp
+package GeofenceUtils
 
 import android.app.NotificationManager
 import android.content.BroadcastReceiver

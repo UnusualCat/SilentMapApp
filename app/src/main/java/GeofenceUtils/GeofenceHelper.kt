@@ -1,4 +1,4 @@
-package com.example.silentmapapp
+package GeofenceUtils
 
 import android.app.PendingIntent
 import android.content.Context

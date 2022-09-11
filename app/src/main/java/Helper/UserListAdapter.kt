@@ -1,5 +1,6 @@
-package com.example.silentmapapp
+package Helper
 
+import GeofenceUtils.GeofenceSettings
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
+import com.example.silentmapapp.MapsActivity
+import com.example.silentmapapp.R
 import com.google.android.gms.maps.model.LatLng
 
 class UserListAdapter(private var activity: Activity , private var items: ArrayList<GeofenceSettings>): BaseAdapter()
@@ -59,14 +62,14 @@ class UserListAdapter(private var activity: Activity , private var items: ArrayL
         viewHolder.deleteButton?.setOnClickListener {
             MapsActivity.Geofence_Help.addGeofenceToRemove(items[position].geofenceID)
             items.removeAt(position)
-            FileManager.saveToFile(items, view !!.context)
+            FileManager.saveToFile(items, view!!.context)
             this.notifyDataSetChanged()
         }
 
         return view as View
     }
 
-    override fun getItem(i: Int): GeofenceSettings{
+    override fun getItem(i: Int): GeofenceSettings {
         return items[i]
     }
 

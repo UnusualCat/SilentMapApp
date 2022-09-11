@@ -1,4 +1,4 @@
-package com.example.silentmapapp
+package Helper
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE

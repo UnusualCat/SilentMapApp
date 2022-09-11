@@ -1,8 +1,10 @@
-package com.example.silentmapapp
+package GeofenceUtils
 
 import android.content.Context
 import android.media.AudioManager
 import androidx.core.content.ContextCompat
+import com.example.silentmapapp.sendGeofenceMuteNotification
+import com.example.silentmapapp.sendGeofenceUnmuteNotification
 import java.io.Serializable
 
 data class GeofenceSettings(val geofenceID: String, val latitudine: Double, val longitudine: Double, val raggio: String, val colore: Int, val silentMode: Boolean): Serializable {
