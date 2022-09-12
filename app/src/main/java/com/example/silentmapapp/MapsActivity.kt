@@ -51,7 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 val latLng: LatLng = result.data?.getParcelableExtra("latLng") !!
 
                 geofenceHelper.addMarker(latLng,mMap,nome!!)
-                geofenceHelper.addCircle(latLng , raggio.toString() , colore !!,mMap)
+                geofenceHelper.addCircle(latLng, raggio.toString() , colore !!,mMap)
 
                 val geofenceSettings = GeofenceSettings(
                     nome,
