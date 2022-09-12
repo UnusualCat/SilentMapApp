@@ -27,7 +27,6 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.material.snackbar.Snackbar
 
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private lateinit var mMap: GoogleMap
@@ -109,7 +108,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mMap.setOnMapLongClickListener(this)
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.setAllGesturesEnabled(true)
-
 
         if(Geofence_Help.Geofences.isNotEmpty()) {
             geoFencingClient.removeGeofences(Geofence_Help.Geofences)
