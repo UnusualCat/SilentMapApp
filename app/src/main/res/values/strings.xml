@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">SilentMapApp</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="gps_savepower">GPS / SAVEPOWER</string>
+    <string name="impostazioni">IMPOSTAZIONI</string>
+    <string name="localizzazione">Localizzazione</string>
+    <string name="off">OFF</string>
+    <string name="aggiornamento_in_tempo_reale">Aggiornamento in tempo reale:</string>
+    <string name="gps">GPS</string>
+    <string name="sensore">Sensore:</string>
 </resources>

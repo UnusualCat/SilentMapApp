@@ -14,8 +14,7 @@ import com.example.silentmapapp.MapsActivity
 import com.example.silentmapapp.R
 import com.google.android.gms.maps.model.LatLng
 
-class UserListAdapter(private var activity: Activity , private var items: ArrayList<GeofenceSettings>): BaseAdapter()
-{
+class UserListAdapter(private var activity: Activity , private var items: ArrayList<GeofenceSettings>): BaseAdapter() {
 
     private class ViewHolder(row: View?) {
 
@@ -28,7 +27,6 @@ class UserListAdapter(private var activity: Activity , private var items: ArrayL
             this.geofenceDescription = row?.findViewById(R.id.geofenceDescription)
             this.viewButton = row?.findViewById(R.id.viewButton)
             this.deleteButton = row?.findViewById(R.id.deleteButton)
-
         }
     }
 

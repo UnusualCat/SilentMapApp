@@ -8,6 +8,7 @@ import Helper.Permissions
 import Helper.Resources
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.example.silentmapapp.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -34,6 +36,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private val TAG = "MapsActivity"
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var permission: Permissions
+    private var geofenceToVisualize: LatLng? = null
+    private var locationUpdateUserPermission = true
+    private var savePowerModeUserPermission = false
+    private var locationRequest = LocationRequest.create()
 
     private val creatingNewGeofence =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -48,7 +54,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 geofenceHelper.addCircle(latLng , raggio.toString() , colore !!,mMap)
 
                 val geofenceSettings = GeofenceSettings(
-                    nome !! ,
+                    nome,
                     latLng.latitude ,
                     latLng.longitude ,
                     raggio.toString() ,
@@ -74,9 +80,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if(intent.getParcelableExtra<LatLng>("coordinate") != null)
+            geofenceToVisualize = intent.getParcelableExtra("coordinate")
+
+        val sharedPreference = getSharedPreferences("PREFERENCES" , Context.MODE_PRIVATE)
+        if (sharedPreference.contains("locationUpdates"))
+            locationUpdateUserPermission = sharedPreference.getBoolean("locationUpdates" , false)
+        if (sharedPreference.contains("savePower"))
+            savePowerModeUserPermission = sharedPreference.getBoolean("savePower" , false)
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         geoFencingClient = LocationServices.getGeofencingClient(this)
         geofenceHelper= GeofenceHelper(this)
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -92,18 +109,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.setAllGesturesEnabled(true)
 
+
         if(Geofence_Help.Geofences.isNotEmpty()) {
             geoFencingClient.removeGeofences(Geofence_Help.Geofences)
         }
-        geofenceHelper.drawGeofences(mMap)
-        permission.enableUserLocation()
 
-        if (ContextCompat.checkSelfPermission(this , Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            mMap.isMyLocationEnabled = true
+        geofenceHelper.drawGeofences(mMap)
+
+        if(geofenceToVisualize != null)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(geofenceToVisualize !! , Resources.DEFAULT_ZOOM.toFloat()))
+        else
             permission.getDeviceLocation()
+
+        if (locationUpdateUserPermission){
+
+            permission.enableUserLocation()
+
+            if(savePowerModeUserPermission)
+                locationRequest.priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+            else locationRequest.priority = Priority.PRIORITY_HIGH_ACCURACY
+
+            if (ContextCompat.checkSelfPermission(this , Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                mMap.isMyLocationEnabled = true
+        }
+        else {
+            Snackbar.make(findViewById(R.id.map), "La localizzazione é stata disattivata dall'utente." , 1000000000).show()
+            mMap.uiSettings.isZoomControlsEnabled = false
         }
     }
-
 
     override fun onMapLongClick(latLng: LatLng) {
 

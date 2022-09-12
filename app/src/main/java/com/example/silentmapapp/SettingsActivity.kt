@@ -19,8 +19,6 @@ class SettingsActivity : AppCompatActivity() {
         val tvUpdates: TextView = findViewById(R.id.tv_updates)
         val tvSensor: TextView = findViewById(R.id.tv_sensor)
         val powerMode: SwitchCompat = findViewById(R.id.powerMode)
-        val tvLat: TextView = findViewById(R.id.tv_lat)
-        val tvLon: TextView = findViewById(R.id.tv_lon)
 
         val sharedPreference = getSharedPreferences("PREFERENCES",Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
@@ -39,15 +37,6 @@ class SettingsActivity : AppCompatActivity() {
 
             if(powerMode.isChecked) tvSensor.text = "Torre cellulare + WIFI"
             else tvSensor.text = "GPS"
-        }
-
-        if(switchLocationUpdates.isChecked) {
-
-            if (sharedPreference.contains("lat"))
-                tvLat.text = sharedPreference.getString("lat" , "0.00")
-
-            if (sharedPreference.contains("lon"))
-                tvLon.text = sharedPreference.getString("lon" , "0.00")
         }
 
         switchLocationUpdates.setOnClickListener {
