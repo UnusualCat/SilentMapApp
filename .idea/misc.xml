@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/PIN/AndroidStudioProjects/SilentMapApp/app/src/main/res/layout/activity_geofence_setup.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/PIN/AndroidStudioProjects/SilentMapApp/app/src/main/res/layout/activity_main.xml" value="0.18958333333333333" />
         <entry key="..\:/Users/PIN/AndroidStudioProjects/SilentMapApp/app/src/main/res/layout/activity_maps.xml" value="0.18958333333333333" />
+        <entry key="..\:/Users/PIN/AndroidStudioProjects/SilentMapApp/app/src/main/res/layout/activity_saved_markers.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/PIN/AndroidStudioProjects/SilentMapApp/app/src/main/res/layout/activity_settings.xml" value="0.18958333333333333" />
         <entry key="..\:/Users/PIN/AndroidStudioProjects/SilentMapApp/app/src/main/res/layout/listview_row_layout.xml" value="0.18958333333333333" />
       </map>

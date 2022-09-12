@@ -1,10 +1,10 @@
 package GeofenceUtils
 
+import Helper.sendGeofenceMuteNotification
+import Helper.sendGeofenceUnmuteNotification
 import android.content.Context
 import android.media.AudioManager
 import androidx.core.content.ContextCompat
-import com.example.silentmapapp.sendGeofenceMuteNotification
-import com.example.silentmapapp.sendGeofenceUnmuteNotification
 import java.io.Serializable
 
 data class GeofenceSettings(val geofenceID: String, val latitudine: Double, val longitudine: Double, val raggio: String, val colore: Int, val silentMode: Boolean): Serializable {
@@ -19,7 +19,7 @@ data class GeofenceSettings(val geofenceID: String, val latitudine: Double, val 
         if (silentMode)
         {
             audioManager.adjustStreamVolume(AudioManager.STREAM_RING , AudioManager.ADJUST_MUTE , 0)
-            sendGeofenceMuteNotification(context)
+            sendGeofenceMuteNotification(context,geofenceID)
         } else
         {
             audioManager.adjustStreamVolume(
@@ -27,7 +27,7 @@ data class GeofenceSettings(val geofenceID: String, val latitudine: Double, val 
                 AudioManager.ADJUST_UNMUTE ,
                 0
             )
-            sendGeofenceUnmuteNotification(context)
+            sendGeofenceUnmuteNotification(context,geofenceID)
         }
     }
 
@@ -41,7 +41,7 @@ data class GeofenceSettings(val geofenceID: String, val latitudine: Double, val 
         if (!silentMode)
         {
             audioManager.adjustStreamVolume(AudioManager.STREAM_RING , AudioManager.ADJUST_MUTE , 0)
-            sendGeofenceMuteNotification(context)
+            sendGeofenceMuteNotification(context,geofenceID)
         } else
         {
             audioManager.adjustStreamVolume(
@@ -49,7 +49,7 @@ data class GeofenceSettings(val geofenceID: String, val latitudine: Double, val 
                 AudioManager.ADJUST_UNMUTE ,
                 0
             )
-            sendGeofenceUnmuteNotification(context)
+            sendGeofenceUnmuteNotification(context,geofenceID)
         }
     }
 

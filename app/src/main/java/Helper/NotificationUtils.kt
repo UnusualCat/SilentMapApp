@@ -1,4 +1,4 @@
-package com.example.silentmapapp
+package Helper
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,15 +10,17 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.example.silentmapapp.MapsActivity
+import com.example.silentmapapp.R
 
 private const val CHANNEL_ID = "GeofenceChannel"
 private val CHANNEL_NAME="SilentMap"
 private val CHANNEL_DESC="Desc"
-private var notificationID = 0
+private var notificationID = 55
 
 fun startNotification(context: Context){
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val name = CHANNEL_NAME
         val descriptionText = CHANNEL_DESC
         val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -51,34 +53,30 @@ fun createNotification(context: Context, NOTIFICATION_ID: Int): PendingIntent? {
     return contentPendingIntent
 }
 
-fun sendGeofenceUnmuteNotification(context: Context) {
+fun sendGeofenceUnmuteNotification(context: Context, geofenceID: String) {
 
-    Log.d("Notifica" , "Unmute")
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setContentTitle(context.getString(R.string.app_name))
-        .setContentText("Disattivazione Modalità silenziosa")
+        .setContentText("Disattivazione modalità silenziosa, marker ID: $geofenceID")
         .setSmallIcon(R.drawable.ic_volume_up)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setContentIntent(createNotification(context,notificationID))
-        .build()
 
     with(NotificationManagerCompat.from(context)) {
-        notify(notificationID, builder)
+        notify(notificationID, builder.build())
     }
 }
 
-fun sendGeofenceMuteNotification(context: Context) {
-    Log.d("Notifica" , "Mute")
+fun sendGeofenceMuteNotification(context: Context , geofenceID: String) {
 
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setContentTitle(context.getString(R.string.app_name))
-        .setContentText("Attivazione Modalità silenziosa")
+        .setContentText("Attivazione modalità silenziosa, marker ID: $geofenceID")
         .setSmallIcon(R.drawable.ic_no_volume)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setContentIntent(createNotification(context,notificationID))
-        .build()
 
     with(NotificationManagerCompat.from(context)) {
-        notify(notificationID, builder)
+        notify(notificationID, builder.build())
     }
 }
