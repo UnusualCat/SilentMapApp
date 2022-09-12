@@ -9,11 +9,9 @@ class FileManager{
 
     companion object {
 
-        private const val filename = "listaGeofence.data"
-
         fun loadFromFile(context: Context): Any {
 
-            val fis = context.applicationContext.openFileInput(filename)
+            val fis = context.applicationContext.openFileInput(Resources.GEOFENCE_FILE_NAME)
             val ois = ObjectInputStream(fis)
 
             val output = ois.readObject()
@@ -23,7 +21,7 @@ class FileManager{
 
         fun saveToFile(data: Any, context: Context){
 
-            val fos =context.applicationContext.openFileOutput(filename, MODE_PRIVATE)
+            val fos =context.applicationContext.openFileOutput(Resources.GEOFENCE_FILE_NAME, MODE_PRIVATE)
             val oos = ObjectOutputStream(fos)
 
             oos.writeObject(data)

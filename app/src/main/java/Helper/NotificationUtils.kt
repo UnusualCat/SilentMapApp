@@ -33,7 +33,6 @@ fun startNotification(context: Context){
 
 fun createNotification(context: Context, NOTIFICATION_ID: Int): PendingIntent? {
     val contentIntent = Intent(context, MapsActivity::class.java)
-    notificationID++
     val contentPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         PendingIntent.getActivity(
             context,

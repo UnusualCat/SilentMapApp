@@ -1,5 +1,6 @@
 package GeofenceUtils
 
+import Helper.FileManager
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -32,14 +33,25 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         when (val geofenceTransition = geofencingEvent?.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_MUTE, 0)
+                var listSettings: List<GeofenceSettings> = FileManager.loadFromFile(context) as List<GeofenceSettings>
+                for (a in geofencingEvent.triggeringGeofences!!){
+                    for(setting in listSettings){
+                        if(a.requestId==setting.geofenceID){
+                            setting.EnableFavoriteMode(context)
+                        }
+                    }
+                }
             }
-            Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                audioManager.adjustStreamVolume(AudioManager.STREAM_RING,AudioManager.ADJUST_UNMUTE,0)
-            }
-            else -> {
 
-                Log.e(TAG, "Invalid type transition $geofenceTransition")
+            Geofence.GEOFENCE_TRANSITION_EXIT -> {
+                var listSettings: List<GeofenceSettings> = FileManager.loadFromFile(context) as List<GeofenceSettings>
+                for (a in geofencingEvent.triggeringGeofences!!){
+                    for(setting in listSettings){
+                        if(a.requestId==setting.geofenceID){
+                            setting.DisableFavoriteMode(context)
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,5 +1,7 @@
 package GeofenceUtils
 
+import Helper.FileManager
+import Helper.Resources
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
@@ -16,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.io.File
 import java.lang.Exception
 
 class GeofenceHelper(base: Context?) : ContextWrapper(base) {
@@ -35,6 +38,31 @@ class GeofenceHelper(base: Context?) : ContextWrapper(base) {
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .build()
+    }
+
+    fun loadGeofences(context: Context,geoFencingClient: GeofencingClient)
+    {
+        val file = File(Resources.Filepath , Resources.GEOFENCE_FILE_NAME)
+        if (file.exists()) {
+            Resources.listaGeofence = FileManager.loadFromFile(context) as ArrayList<GeofenceSettings>
+            for (elemento in Resources.listaGeofence) {
+                val latLng = LatLng(elemento.latitudine , elemento.longitudine)
+                addGeofence(elemento.geofenceID , latLng , elemento.raggio,geoFencingClient)
+            }
+        }
+    }
+
+    fun drawGeofences(mMap:GoogleMap)
+    {
+        val file = File(Resources.Filepath, Resources.GEOFENCE_FILE_NAME)
+        if (file.exists()) {
+            Resources.listaGeofence = FileManager.loadFromFile(this) as ArrayList<GeofenceSettings>
+            for (elemento in Resources.listaGeofence) {
+                val latLng = LatLng(elemento.latitudine , elemento.longitudine)
+                addMarker(latLng,mMap,elemento.geofenceID)
+                addCircle(latLng , elemento.raggio , elemento.colore,mMap)
+            }
+        }
     }
 
     fun getErrorString(e: Exception): String? {
@@ -83,9 +111,9 @@ class GeofenceHelper(base: Context?) : ContextWrapper(base) {
             }
     }
 
-    fun addMarker(LatLng: LatLng,mMap: GoogleMap)
+    fun addMarker(LatLng: LatLng,mMap: GoogleMap,title:String)
     {
-        val markerOptions: MarkerOptions = MarkerOptions().position(LatLng)
+        val markerOptions: MarkerOptions = MarkerOptions().position(LatLng).title(title).visible(true)
         mMap.addMarker(markerOptions)
     }
 

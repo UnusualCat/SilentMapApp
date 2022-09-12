@@ -6,6 +6,7 @@ import GeofenceUtils.GeofenceSetupActivity
 import Helper.FileManager
 import Helper.Permissions
 import Helper.Resources
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,12 +15,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.example.silentmapapp.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
+import com.google.android.material.snackbar.Snackbar
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
@@ -41,7 +44,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 val silenzioso = result.data?.getBooleanExtra("silenzioso" , false)
                 val latLng: LatLng = result.data?.getParcelableExtra("latLng") !!
 
-                geofenceHelper.addMarker(latLng,mMap)
+                geofenceHelper.addMarker(latLng,mMap,nome!!)
                 geofenceHelper.addCircle(latLng , raggio.toString() , colore !!,mMap)
 
                 val geofenceSettings = GeofenceSettings(
@@ -88,9 +91,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mMap.setOnMapLongClickListener(this)
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.setAllGesturesEnabled(true)
+
+        if(Geofence_Help.Geofences.isNotEmpty()) {
+            geoFencingClient.removeGeofences(Geofence_Help.Geofences)
+        }
+        geofenceHelper.drawGeofences(mMap)
         permission.enableUserLocation()
-        permission.getDeviceLocation()
-        mMap.isMyLocationEnabled = true
+
+        if (ContextCompat.checkSelfPermission(this , Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            mMap.isMyLocationEnabled = true
+            permission.getDeviceLocation()
+        }
     }
 
 
