@@ -2,24 +2,25 @@ package com.example.silentmapapp
 
 import GeofenceUtils.GeofenceHelper
 import GeofenceUtils.GeofenceSettings
+import GeofenceUtils.GeofenceSetupActivity
 import Helper.FileManager
 import Helper.Permissions
+import Helper.Resources
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.example.silentmapapp.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.MarkerOptions
-import java.io.File
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
@@ -30,8 +31,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private val TAG = "MapsActivity"
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var permission: Permissions
-    val GEOFENCE_FILE_NAME = "listaGeofence.data"
-    var listaGeofence: ArrayList<GeofenceSettings> = arrayListOf()
+
+    private val creatingNewGeofence =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK){
+                val nome = result.data?.getStringExtra("nome")
+                val raggio = result.data?.getStringExtra("raggio")
+                val colore = result.data?.getIntExtra("colore" , 0)
+                val silenzioso = result.data?.getBooleanExtra("silenzioso" , false)
+                val latLng: LatLng = result.data?.getParcelableExtra("latLng") !!
+
+                geofenceHelper.addMarker(latLng,mMap)
+                geofenceHelper.addCircle(latLng , raggio.toString() , colore !!,mMap)
+
+                val geofenceSettings = GeofenceSettings(
+                    nome !! ,
+                    latLng.latitude ,
+                    latLng.longitude ,
+                    raggio.toString() ,
+                    colore ,
+                    silenzioso !!
+                )
+
+                Resources.listaGeofence.add(geofenceSettings)
+                FileManager.saveToFile(Resources.listaGeofence , this)
+                geofenceHelper.addGeofence(nome , latLng , raggio.toString(),geoFencingClient)
+            }
+        }
 
     object Geofence_Help{
         var Geofences: ArrayList<String> = arrayListOf()
@@ -64,69 +90,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mMap.uiSettings.setAllGesturesEnabled(true)
         permission.enableUserLocation()
         permission.getDeviceLocation()
-        loadGeofencesIfTheyExist()
         mMap.isMyLocationEnabled = true
     }
 
-    private fun loadGeofencesIfTheyExist() {
-
-        val file = File(GEOFENCE_FILE_NAME)
-
-            if (file.exists()) {
-
-                listaGeofence = FileManager.loadFromFile(this) as ArrayList<GeofenceSettings>
-
-                for (elemento in listaGeofence)
-                {
-                    val latLng = LatLng(elemento.latitudine , elemento.longitudine)
-                    addMarker(latLng)
-                    addCircle(latLng , elemento.raggio , elemento.colore)
-                    addGeofence(elemento.geofenceID , latLng , elemento.raggio)
-                }
-            }
-    }
 
     override fun onMapLongClick(latLng: LatLng) {
-        mMap.clear()
-        addMarker(latLng)
-        addCircle(latLng,"200.0",0)
-        //TODO CREARE FINESTRA PER SETTARE UN GEOFENCE
-    }
 
-    private fun addCircle(LatLng: LatLng , radius: String , colore: Int)
-    {
-        val circleOptions = CircleOptions()
-        circleOptions.center(LatLng)
-        circleOptions.radius(radius.toDouble())
-        circleOptions.strokeColor(colore)
-        circleOptions.fillColor(0)
-        circleOptions.strokeWidth(4F)
-        mMap.addCircle(circleOptions)
-    }
-
-    private fun addMarker(LatLng: LatLng) {
-        val markerOptions: MarkerOptions = MarkerOptions().position(LatLng)
-        mMap.addMarker(markerOptions)
-    }
-
-    @SuppressLint("MissingPermission")
-    fun addGeofence(geofenceID: String , LatLng: LatLng , radius: String) {
-        val geofence = geofenceHelper.getGeoFence(
-            geofenceID,
-            LatLng,
-            radius.toFloat(),
-            Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
-        )
-        val geofencingRequest: GeofencingRequest = geofenceHelper.getGeoFencingRequest(geofence)
-
-        geoFencingClient.addGeofences(geofencingRequest, geofenceHelper.getPendingIntent())
-            .addOnSuccessListener {
-                Log.d(TAG, "onSuccess: Geofence Added...")
-            }
-            .addOnFailureListener { e ->
-                val errorMessage = geofenceHelper.getErrorString(e)
-                Log.d(TAG, "onFailure: $errorMessage")
-            }
+        val intent = Intent(applicationContext , GeofenceSetupActivity::class.java)
+        intent.putExtra("latLng" , latLng)
+        creatingNewGeofence.launch(intent)
     }
 
     @SuppressLint("MissingPermission")

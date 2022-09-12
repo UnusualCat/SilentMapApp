@@ -1,15 +1,21 @@
 package GeofenceUtils
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
+import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import java.lang.Exception
 
 class GeofenceHelper(base: Context?) : ContextWrapper(base) {
@@ -54,6 +60,44 @@ class GeofenceHelper(base: Context?) : ContextWrapper(base) {
                 PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             }
         return pendingIntent
+    }
+
+    @SuppressLint("MissingPermission")
+    fun addGeofence(geofenceID: String , LatLng: LatLng , radius: String,geoFencingClient: GeofencingClient)
+    {
+        val geofence = getGeoFence(
+            geofenceID ,
+            LatLng ,
+            radius.toFloat(),
+            Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
+        )
+        val geofencingRequest: GeofencingRequest = getGeoFencingRequest(geofence)
+
+        geoFencingClient.addGeofences(geofencingRequest , getPendingIntent())
+            .addOnSuccessListener {
+                Log.d(TAG, "onSuccess: Geofence Added...")
+            }
+            .addOnFailureListener { e ->
+                val errorMessage = getErrorString(e)
+                Log.d(TAG , "onFailure: $errorMessage")
+            }
+    }
+
+    fun addMarker(LatLng: LatLng,mMap: GoogleMap)
+    {
+        val markerOptions: MarkerOptions = MarkerOptions().position(LatLng)
+        mMap.addMarker(markerOptions)
+    }
+
+    fun addCircle(LatLng: LatLng , radius: String , colore: Int, mMap: GoogleMap)
+    {
+        val circleOptions = CircleOptions()
+        circleOptions.center(LatLng)
+        circleOptions.radius(radius.toDouble())
+        circleOptions.strokeColor(colore)
+        circleOptions.fillColor(0)
+        circleOptions.strokeWidth(4F)
+        mMap.addCircle(circleOptions)
     }
 
 }
